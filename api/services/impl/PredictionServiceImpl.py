@@ -1,10 +1,7 @@
-import traceback
-
-from dao.PredictionDAO import PredictionDAO
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
-from fastapi.responses import JSONResponse
-
+from dao.PredictionDAO import PredictionDAO
 from dto.res.ErrorResDto import ErrorResDto
 from dto.res.GeneralMsgResDto import GeneralMsgResDto
 from models.Prediction import Prediction

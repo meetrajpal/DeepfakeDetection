@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from dotenv import load_dotenv
 from starlette.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
-from routers import UserRouter, AuthRouter, MailClickRouter
+from routers import UserRouter, AuthRouter, MailClickRouter, VideoRouter, DetectRouter, PredictionRouter
 
 load_dotenv(".env")
 
@@ -27,3 +27,6 @@ app = FastAPI(
 app.include_router(AuthRouter.router)
 app.include_router(MailClickRouter.router)
 app.include_router(UserRouter.router)
+app.include_router(DetectRouter.router)
+app.include_router(PredictionRouter.router)
+app.include_router(VideoRouter.router)

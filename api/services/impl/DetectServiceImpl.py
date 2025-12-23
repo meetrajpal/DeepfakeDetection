@@ -1,6 +1,7 @@
 import os
 import cv2
 import torch
+import httpx
 import shutil
 import numpy as np
 from torch.amp import autocast
@@ -167,3 +168,115 @@ class DetectServiceImpl(DetectService):
             hasException=False,
             message=f"Detection Result: {result} (Confidence: {confidence_score}%)."
         ).dict(), status_code=200)
+
+    async def ig_reel(self, user_id: int, username: str, url: str):
+        callurl = f"https://instagram-reels-downloader-api.p.rapidapi.com/download?url={url}"
+        headers = {
+            "x-rapidapi-host": os.getenv("IG_H"),
+            "x-rapidapi-key": os.getenv("RKEY")
+        }
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.get(callurl, headers=headers)
+            if response:
+                data = response.json()
+            else:
+                error_res = GeneralMsgResDto(
+                    isSuccess=False,
+                    hasException=True,
+                    errorResDto=ErrorResDto(
+                        code="internal_server_error",
+                        message="No response from IG reel download server.",
+                        details="No response from IG reel download server. Try after some time.",
+                    ),
+                    message="Error occurred while downloading the reel download server."
+                )
+                return JSONResponse(content=error_res.dict(), status_code=500)
+
+        if data["data"]["medias"][0]["url"]:
+            download_url = data["data"]["medias"][0]["url"]
+            extension = data["data"]["medias"][0]["extension"]
+            filename = f"{username}_{data["data"]["shortcode"]}.{extension}"
+        else:
+            error_res = GeneralMsgResDto(
+                isSuccess=False,
+                hasException=True,
+                errorResDto=ErrorResDto(
+                    code="not_found",
+                    message="We are unable to download this reel.",
+                    details="We are unable to download this reel. Try with another reel.",
+                ),
+                message="Error occurred while downloading the reel download server."
+            )
+            return JSONResponse(content=error_res.dict(), status_code=500)
+
+        if extension not in allowed_extensions:
+            error_res = GeneralMsgResDto(
+                isSuccess=False,
+                hasException=True,
+                errorResDto=ErrorResDto(
+                    code="bad_request",
+                    message=f"The downloaded file has extension {extension} which is currently not supported.",
+                    details=f"Only {allowed_extensions} are allowed",
+                ),
+                message="Request could not be completed due to an error."
+            )
+            return JSONResponse(content=error_res.dict(), status_code=400)
+
+        file_path = os.path.join(os.getenv("UPLOAD_DIR"), filename)
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(download_url)
+            if response.status_code == 200:
+                with open(file_path, "wb") as file:
+                    file.write(response.content)
+            else:
+                error_res = GeneralMsgResDto(
+                    isSuccess=False,
+                    hasException=True,
+                    errorResDto=ErrorResDto(
+                        code="not_found",
+                        message="We are unable to save this reel on our server.",
+                        details="We are unable to download this reel. Try with another reel.",
+                    ),
+                    message="Error occurred while downloading the reel download server."
+                )
+                return JSONResponse(content=error_res.dict(), status_code=500)
+
+        video_service = VideoServiceImpl(self.db)
+        new_video = video_service.add_video(filename, file_path, user_id, "instagram reel", url)
+
+        if isinstance(new_video, JSONResponse):
+            return new_video
+
+        input_tensor = preprocess_video(file_path)
+
+        if input_tensor is None:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            return JSONResponse(content=GeneralMsgResDto(
+                isSuccess=False,
+                hasException=False,
+                message="Sorry, we are unable to detect sufficient face frames in the video. Please upload a different video."
+            ).dict(), status_code=400)
+
+        with torch.no_grad():
+            with autocast(device_type='cuda', enabled=True):
+                output = model(input_tensor)
+            probabilities = F.softmax(output, dim=1)
+            confidence, predicted_class = torch.max(probabilities, 1)
+
+        result = "FAKE" if predicted_class.item() == 1 else "REAL"
+        confidence_score = f"{(confidence.item() * 100):.2f}"
+
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+        prediction_service = PredictionServiceImpl(self.db)
+        prediction_service.add_prediction(user_id, new_video.video_id, result)
+
+        return JSONResponse(content=GeneralMsgResDto(
+            isSuccess=True,
+            hasException=False,
+            message=f"Detection Result: {result} (Confidence: {confidence_score}%)."
+        ).dict(), status_code=200)
+

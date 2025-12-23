@@ -11,3 +11,7 @@ class DetectService(ABC):
     @abstractmethod
     async def ig_reel(self, user_id: int, username: str, url: str):
         pass
+
+    @abstractmethod
+    async def twitter_video(self, user_id: int, username: str, url: str):
+        pass

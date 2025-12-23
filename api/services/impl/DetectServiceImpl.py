@@ -280,3 +280,101 @@ class DetectServiceImpl(DetectService):
             message=f"Detection Result: {result} (Confidence: {confidence_score}%)."
         ).dict(), status_code=200)
 
+    async def twitter_video(self, user_id: int, username: str, url: str):
+        callurl = f"https://twitter-video-and-image-downloader.p.rapidapi.com/twitter?url={url}"
+        headers = {
+            "x-rapidapi-host": os.getenv("TWITTER_H"),
+            "x-rapidapi-key": os.getenv("RKEY")
+        }
+
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.get(callurl, headers=headers)
+            if response:
+                data = response.json()
+            else:
+                error_res = GeneralMsgResDto(
+                    isSuccess=False,
+                    hasException=True,
+                    errorResDto=ErrorResDto(
+                        code="internal_server_error",
+                        message="No response from Twitter video download server.",
+                        details="No response from Twitter video download server. Try after some time.",
+                    ),
+                    message="Error occurred while downloading the Twitter video."
+                )
+                return JSONResponse(content=error_res.dict(), status_code=500)
+
+        if data["media"][0]["url"]:
+            download_url = data["media"][0]["url"]
+            extension = "mp4"
+            filename = f"{username}_{data["id"]}.{extension}"
+        else:
+            error_res = GeneralMsgResDto(
+                isSuccess=False,
+                hasException=True,
+                errorResDto=ErrorResDto(
+                    code="not_found",
+                    message="We are unable to download this Twitter video.",
+                    details="We are unable to download this Twitter video. Try with another Twitter video.",
+                ),
+                message="Error occurred while downloading the Twitter video."
+            )
+            return JSONResponse(content=error_res.dict(), status_code=500)
+
+        file_path = os.path.join(os.getenv("UPLOAD_DIR"), filename)
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(download_url)
+            if response.status_code == 200:
+                with open(file_path, "wb") as file:
+                    file.write(response.content)
+            else:
+                error_res = GeneralMsgResDto(
+                    isSuccess=False,
+                    hasException=True,
+                    errorResDto=ErrorResDto(
+                        code="not_found",
+                        message="We are unable to save this Twitter video on our server.",
+                        details="We are unable to download this Twitter video. Try with another Twitter video.",
+                    ),
+                    message="Error occurred while downloading the Twitter video."
+                )
+                return JSONResponse(content=error_res.dict(), status_code=500)
+
+        video_service = VideoServiceImpl(self.db)
+        new_video = video_service.add_video(filename, file_path, user_id, "twitter video", url)
+
+        if isinstance(new_video, JSONResponse):
+            return new_video
+
+        input_tensor = preprocess_video(file_path)
+
+        if input_tensor is None:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            return JSONResponse(content=GeneralMsgResDto(
+                isSuccess=False,
+                hasException=False,
+                message="Sorry, we are unable to detect sufficient face frames in the video. Please upload a different video."
+            ).dict(), status_code=400)
+
+        with torch.no_grad():
+            with autocast(device_type='cuda', enabled=True):
+                output = model(input_tensor)
+            probabilities = F.softmax(output, dim=1)
+            confidence, predicted_class = torch.max(probabilities, 1)
+
+        result = "FAKE" if predicted_class.item() == 1 else "REAL"
+        confidence_score = f"{(confidence.item() * 100):.2f}"
+
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+        prediction_service = PredictionServiceImpl(self.db)
+        prediction_service.add_prediction(user_id, new_video.video_id, result)
+
+        return JSONResponse(content=GeneralMsgResDto(
+            isSuccess=True,
+            hasException=False,
+            message=f"Detection Result: {result} (Confidence: {confidence_score}%)."
+        ).dict(), status_code=200)

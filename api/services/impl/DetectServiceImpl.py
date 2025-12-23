@@ -378,3 +378,115 @@ class DetectServiceImpl(DetectService):
             hasException=False,
             message=f"Detection Result: {result} (Confidence: {confidence_score}%)."
         ).dict(), status_code=200)
+
+    async def youtube_video(self, user_id: int, username: str, url: str):
+        callurl = f"https://social-download-all-in-one.p.rapidapi.com/v1/social/autolink"
+        headers = {
+            "x-rapidapi-host": os.getenv("YT_H"),
+            "x-rapidapi-key": os.getenv("RKEY")
+        }
+
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.post(callurl, json={"url": url}, headers=headers)
+            if response:
+                data = response.json()
+            else:
+                error_res = GeneralMsgResDto(
+                    isSuccess=False,
+                    hasException=True,
+                    errorResDto=ErrorResDto(
+                        code="internal_server_error",
+                        message="No response from YouTube video download server.",
+                        details="No response from YouTube video download server. Try after some time.",
+                    ),
+                    message="Error occurred while downloading the YouTube video."
+                )
+                return JSONResponse(content=error_res.dict(), status_code=500)
+
+        if data["medias"][0]["url"]:
+            download_url = data["medias"][0]["url"]
+            extension = data["medias"][0]["ext"]
+            videoid = get_youtube_video_id(url)
+            if videoid is None:
+                error_res = GeneralMsgResDto(
+                    isSuccess=False,
+                    hasException=True,
+                    errorResDto=ErrorResDto(
+                        code="not_found",
+                        message="We are unable to extract video id for this YouTube video.",
+                        details="We are unable to extract video id for this YouTube video. Try with another YouTube video.",
+                    ),
+                    message="Request could not be completed due to an error."
+                )
+                return JSONResponse(content=error_res.dict(), status_code=500)
+            filename = f"{username}_{videoid}.{extension}"
+        else:
+            error_res = GeneralMsgResDto(
+                isSuccess=False,
+                hasException=True,
+                errorResDto=ErrorResDto(
+                    code="not_found",
+                    message="We are unable to download this YouTube video.",
+                    details="We are unable to download this YouTube video. Try with another YouTube video.",
+                ),
+                message="Error occurred while downloading the YouTube video."
+            )
+            return JSONResponse(content=error_res.dict(), status_code=500)
+
+        file_path = os.path.join(os.getenv("UPLOAD_DIR"), filename)
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(download_url)
+            if response.status_code in (200, 302):  # Handle redirect or success
+                with open(file_path, "wb") as file:
+                    file.write(response.content)
+            else:
+                error_res = GeneralMsgResDto(
+                    isSuccess=False,
+                    hasException=True,
+                    errorResDto=ErrorResDto(
+                        code="not_found",
+                        message="We are unable to save this YouTube video on our server.",
+                        details="We are unable to download this YouTube video. Try with another YouTube video.",
+                    ),
+                    message="Error occurred while downloading the YouTube video."
+                )
+                return JSONResponse(content=error_res.dict(), status_code=500)
+
+        video_service = VideoServiceImpl(self.db)
+        new_video = video_service.add_video(filename, file_path, user_id, "youtube video", url)
+
+        if isinstance(new_video, JSONResponse):
+            return new_video
+
+        input_tensor = preprocess_video(file_path)
+
+        if input_tensor is None:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            return JSONResponse(content=GeneralMsgResDto(
+                isSuccess=False,
+                hasException=False,
+                message="Sorry, we are unable to detect sufficient face frames in the video. Please upload a different video."
+            ).dict(), status_code=400)
+
+        with torch.no_grad():
+            with autocast(device_type='cuda', enabled=True):
+                output = model(input_tensor)
+            probabilities = F.softmax(output, dim=1)
+            confidence, predicted_class = torch.max(probabilities, 1)
+
+        result = "FAKE" if predicted_class.item() == 1 else "REAL"
+        confidence_score = f"{(confidence.item() * 100):.2f}"
+
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+        prediction_service = PredictionServiceImpl(self.db)
+        prediction_service.add_prediction(user_id, new_video.video_id, result)
+
+        return JSONResponse(content=GeneralMsgResDto(
+            isSuccess=True,
+            hasException=False,
+            message=f"Detection Result: {result} (Confidence: {confidence_score}%)."
+        ).dict(), status_code=200)

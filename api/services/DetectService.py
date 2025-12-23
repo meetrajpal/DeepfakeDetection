@@ -15,3 +15,7 @@ class DetectService(ABC):
     @abstractmethod
     async def twitter_video(self, user_id: int, username: str, url: str):
         pass
+
+    @abstractmethod
+    async def youtube_video(self, user_id: int, username: str, url: str):
+        pass

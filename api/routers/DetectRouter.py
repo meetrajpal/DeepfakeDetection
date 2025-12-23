@@ -170,3 +170,59 @@ async def twitter_video(
 
     detect_service = DetectServiceImpl(db)
     return await detect_service.twitter_video(user["user_id"], user["username"], url)
+
+@router.get("/youtube-video",
+            response_model=GeneralMsgResDto,
+            responses={
+                401: {"model": UnauthenticatedResDto, "description": "Unauthorised"},
+                404: {"model": GeneralMsgResDto, "description": "Not found"},
+                400: {"model": GeneralMsgResDto, "description": "Bad Request"},
+                500: {"model": GeneralMsgResDto, "description": "Internal Server Error"}
+            }
+            )
+async def youtube_video(
+        user: user_dependency,
+        db: db_dependency,
+        url: str = Query(description="Enter valid url of youtube video")
+):
+    if user is None:
+        error_res = GeneralMsgResDto(
+            isSuccess=False,
+            hasException=True,
+            errorResDto=ErrorResDto(
+                code="unauthorized",
+                message="Authentication failed, please log in to access this resource.",
+                details=f"Full authentication is required to access this resource.",
+            ),
+            message="Request could not be completed due to an error.",
+        )
+        return JSONResponse(content=error_res.dict(), status_code=401)
+
+    if not url:
+        error_res = GeneralMsgResDto(
+            isSuccess=False,
+            hasException=True,
+            errorResDto=ErrorResDto(
+                code="bad_request",
+                message="Please enter url of youtube video",
+                details=f"Url cannot be empty"
+            ),
+            message="Request could not be completed due to an error."
+        )
+        return JSONResponse(content=error_res.dict(), status_code=400)
+
+    if "https://youtu.be" not in url:
+        error_res = GeneralMsgResDto(
+            isSuccess=False,
+            hasException=True,
+            errorResDto=ErrorResDto(
+                code="bad_request",
+                message="Please enter valid url of youtube video",
+                details="This URL not seems to be valid for youtube video. Make sure it looks like https://youtu.be/uEg9_M4YaJk?si=mxrCu2F8btZKhQt7"
+            ),
+            message="Request could not be completed due to an error."
+        )
+        return JSONResponse(content=error_res.dict(), status_code=400)
+
+    detect_service = DetectServiceImpl(db)
+    return await detect_service.youtube_video(user["user_id"], user["username"], url)

@@ -2,16 +2,18 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchCurUser } from "../actions/actionindex";
+import { fetchCurUser, fetchHistory } from "../actions/actionindex";
 import urls from "../config/url.json";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const curUser = useSelector((state) => state.current_user);
+  const history = useSelector((state) => state.history);
   const [inputType, setInputType] = useState("file");
   const [textInput, setTextInput] = useState("");
   const [file, setFile] = useState(null);
+  const [records, setRecords] = useState([]);
   const [loader, setLoader] = useState(false);
   const formData = new FormData();
 
@@ -21,6 +23,7 @@ export default function Dashboard() {
     } else {
       const userId = localStorage.getItem("user_id");
       dispatch(fetchCurUser(userId));
+      dispatch(fetchHistory(userId));
     }
   }, []);
 
@@ -30,8 +33,17 @@ export default function Dashboard() {
     } else {
       const userId = localStorage.getItem("user_id");
       dispatch(fetchCurUser(userId));
+      dispatch(fetchHistory(userId));
     }
   }, [dispatch, navigate]);
+
+  useEffect(() => {
+    if (history.length > 0) {
+      setRecords(history);
+    } else {
+      setRecords([]);
+    }
+  }, [history, records]);
 
   const handleInputChange = (e) => {
     setTextInput(e.target.value);
@@ -71,6 +83,7 @@ export default function Dashboard() {
             );
             const data = res.data;
             if (data.isSuccess) {
+              dispatch(fetchHistory(localStorage.getItem("user_id")));
               alert(data.message);
               setLoader(false);
             } else if (data.detail) {
@@ -122,6 +135,7 @@ export default function Dashboard() {
             );
             const data = res.data;
             if (data.isSuccess) {
+              dispatch(fetchHistory(localStorage.getItem("user_id")));
               alert(data.message);
               setLoader(false);
             } else if (data.detail) {
@@ -173,6 +187,7 @@ export default function Dashboard() {
             );
             const data = res.data;
             if (data.isSuccess) {
+              dispatch(fetchHistory(localStorage.getItem("user_id")));
               alert(data.message);
               setLoader(false);
             } else if (data.detail) {
@@ -224,6 +239,7 @@ export default function Dashboard() {
             );
             const data = res.data;
             if (data.isSuccess) {
+              dispatch(fetchHistory(localStorage.getItem("user_id")));
               alert(data.message);
               setLoader(false);
             } else if (data.detail) {
@@ -275,6 +291,7 @@ export default function Dashboard() {
             );
             const data = res.data;
             if (data.isSuccess) {
+              dispatch(fetchHistory(localStorage.getItem("user_id")));
               alert(data.message);
               setLoader(false);
             } else if (data.detail) {
@@ -400,6 +417,67 @@ export default function Dashboard() {
                     <i className="bi bi-search me-2"></i>Detect
                   </button>
                 </div>
+              </div>
+            </div>
+
+            <div className="card shadow-sm">
+              <div className="card-header bg-light">
+                <h5 className="mb-0">Detection History</h5>
+              </div>
+              <div className="card-body p-0">
+                {records.length > 0 ? (
+                  <div className="list-group list-group-flush">
+                    {[...records].reverse().map((record) => (
+                      <div key={record.pred_id} className="list-group-item">
+                        <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                          <div className="mb-2 mb-md-0">
+                            <div className="d-flex align-items-center">
+                              <span
+                                className={`badge ${
+                                  record.pred_label === "REAL"
+                                    ? "bg-success"
+                                    : "bg-danger"
+                                } me-2`}
+                              >
+                                {record.pred_label}
+                              </span>
+                              <span className="fw-medium text-truncate">
+                                {record.filename}
+                              </span>
+                            </div>
+                            <small className="text-muted">
+                              Source: {record.source}
+                            </small>
+                          </div>
+                          <div className="d-flex gap-2">
+                            {record.url !== "NA" && (
+                              <a
+                                href={record.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-sm btn-outline-primary"
+                                title="View uploaded link"
+                              >
+                                <i className="bi bi-link"></i> View
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-5">
+                    <i
+                      className="bi bi-collection-play d-block text-muted mb-3"
+                      style={{ fontSize: "2rem" }}
+                    ></i>
+                    <p className="mb-0 text-muted">
+                      You currently have no history - get started by detecting a
+                      video
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

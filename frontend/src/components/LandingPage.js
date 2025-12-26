@@ -15,11 +15,6 @@ export default function LandingPage() {
           className="container d-flex flex-column justify-content-center align-items-center text-center position-relative p-5"
           style={{ background: "rgba(0, 0, 0, 0.5)" }}
         >
-          {/* <img
-                        src="https://images.unsplash.com/photo-1736430043488-0c369959a5c6"
-                        alt="AI Technology"
-                        className="w-50 img-thumbnail"
-                    /> */}
           <h1
             className="text-white fw-bold"
             style={{ "text-shadow": "2px 2px 5px rgba(0, 0, 0, 0.7)" }}

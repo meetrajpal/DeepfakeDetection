@@ -256,6 +256,57 @@ export default function Dashboard() {
         }
         break;
 
+      case "yt":
+        if (textInput.trim()) {
+          setLoader(true);
+
+          const uri = urls.find(
+            (data) => data.operationType === "getDetectYtVideo"
+          )?.url;
+          if (!uri) {
+            alert("No endpoint found for getDetectYtVideo.");
+            setLoader(false);
+            return;
+          }
+
+          try {
+            const res = await axios.get(
+              process.env.REACT_APP_API_URL + uri + `?url=${textInput}`
+            );
+            const data = res.data;
+            if (data.isSuccess) {
+              alert(data.message);
+              setLoader(false);
+            } else if (data.detail) {
+              setLoader(false);
+              alert(data.detail);
+            } else {
+              alert(data.message);
+              setLoader(false);
+            }
+          } catch (error) {
+            if (error.response?.data?.hasException) {
+              alert(error.response.data.errorResDto.details);
+              setLoader(false);
+            } else if (
+              !error.response?.data?.isSuccess &&
+              !error.response?.data?.hasException
+            ) {
+              alert(error.response?.data?.message);
+              setLoader(false);
+            } else if (error.request) {
+              alert("No response from server");
+              setLoader(false);
+            } else {
+              alert("Error: " + error.message);
+              setLoader(false);
+            }
+          }
+        } else {
+          alert("No YouTube URL provided.");
+        }
+        break;
+
       default:
         alert("Invalid selection.");
         break;
@@ -305,6 +356,7 @@ export default function Dashboard() {
                     <option value="ig">Instagram Reel / Video</option>
                     <option value="fb">Facebook Video</option>
                     <option value="xv">Twitter Video / Status</option>
+                    <option value="yt">YouTube Video</option>
                   </select>
                 </div>
 

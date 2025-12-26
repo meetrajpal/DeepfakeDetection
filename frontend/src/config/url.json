@@ -24,12 +24,12 @@
     "url": "/api/v1/mail/update-email/"
   },
   {
-    "operationType": "getDetectIgReel",
-    "url": "/api/v1/detect/ig-reel"
-  },
-  {
     "operationType": "postDirectUpload",
     "url": "/api/v1/detect/direct-upload"
+  },
+  {
+    "operationType": "getDetectIgReel",
+    "url": "/api/v1/detect/ig-reel"
   },
   {
     "operationType": "getDetectFbVideo",
@@ -38,6 +38,10 @@
   {
     "operationType": "getDetectTwitterVideo",
     "url": "/api/v1/detect/twitter-video"
+  },
+  {
+    "operationType": "getDetectYtVideo",
+    "url": "/api/v1/detect/youtube-video"
   },
   {
     "operationType": "postLogout",

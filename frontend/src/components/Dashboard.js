@@ -1,8 +1,8 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { fetchCurUser, fetchHistory } from "../actions/actionindex";
+import axios from "axios";
 import urls from "../config/url.json";
 
 export default function Dashboard() {
@@ -51,6 +51,44 @@ export default function Dashboard() {
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
+  };
+
+  const deleteHistory = async (pred_id) => {
+    setLoader(true);
+
+    const uri = urls.find(
+      (data) => data.operationType === "getPredictions"
+    )?.url;
+    if (!uri) {
+      alert("No endpoint found for getPredictions in deletePredictions.");
+      setLoader(false);
+      return;
+    }
+
+    try {
+      const res = await axios.delete(
+        process.env.REACT_APP_API_URL + uri + `?pred_id=${pred_id}`
+      );
+      const data = res.data;
+      if (data.isSuccess) {
+        dispatch(fetchHistory(localStorage.getItem("user_id")));
+        setLoader(false);
+      }
+    } catch (error) {
+      if (error.response?.data?.hasException) {
+        alert(error.response.data.errorResDto.details);
+        setLoader(false);
+      } else if (error.response?.data?.detail?.msg) {
+        alert(error.response?.data?.detail?.msg);
+        setLoader(false);
+      } else if (error.request) {
+        alert("No response from server");
+        setLoader(false);
+      } else {
+        alert("Error: " + error.message);
+        setLoader(false);
+      }
+    }
   };
 
   const handleSubmit = async () => {
@@ -461,6 +499,13 @@ export default function Dashboard() {
                                 <i className="bi bi-link"></i> View
                               </a>
                             )}
+                            <button
+                              className="btn btn-sm btn-outline-danger"
+                              title="Delete"
+                              onClick={() => deleteHistory(record.pred_id)}
+                            >
+                              <i className="bi bi-trash"></i>
+                            </button>
                           </div>
                         </div>
                       </div>

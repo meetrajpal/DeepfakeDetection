@@ -13,17 +13,7 @@ function Header() {
             Try for free
           </Link>
         ) : (
-          <div class="dropdown">
-            <button
-              class="btn border dropdown-toggle"
-              type="button"
-              id="dropdownMenuButton1"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              {localStorage.getItem("username")}
-            </button>
-          </div>
+          ""
         )}
       </div>
     </header>

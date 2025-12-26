@@ -32,6 +32,10 @@
     "url": "/api/v1/detect/direct-upload"
   },
   {
+    "operationType": "getDetectTwitterVideo",
+    "url": "/api/v1/detect/twitter-video"
+  },
+  {
     "operationType": "postLogout",
     "url": "/api/v1/auth/logout"
   },

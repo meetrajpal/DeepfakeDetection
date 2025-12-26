@@ -32,6 +32,10 @@
     "url": "/api/v1/detect/direct-upload"
   },
   {
+    "operationType": "getDetectFbVideo",
+    "url": "/api/v1/detect/facebook"
+  },
+  {
     "operationType": "getDetectTwitterVideo",
     "url": "/api/v1/detect/twitter-video"
   },

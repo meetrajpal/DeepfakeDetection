@@ -10,6 +10,7 @@ export default function Dashboard() {
   const dispatch = useDispatch();
   const curUser = useSelector((state) => state.current_user);
   const [inputType, setInputType] = useState("file");
+  const [textInput, setTextInput] = useState("");
   const [file, setFile] = useState(null);
   const [loader, setLoader] = useState(false);
   const formData = new FormData();
@@ -31,6 +32,10 @@ export default function Dashboard() {
       dispatch(fetchCurUser(userId));
     }
   }, [dispatch, navigate]);
+
+  const handleInputChange = (e) => {
+    setTextInput(e.target.value);
+  };
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -98,6 +103,57 @@ export default function Dashboard() {
         }
         break;
 
+      case "ig":
+        if (textInput.trim()) {
+          setLoader(true);
+
+          const uri = urls.find(
+            (data) => data.operationType === "getDetectIgReel"
+          )?.url;
+          if (!uri) {
+            alert("No endpoint found for getDetectIgReel.");
+            setLoader(false);
+            return;
+          }
+
+          try {
+            const res = await axios.get(
+              process.env.REACT_APP_API_URL + uri + `?url=${textInput}`
+            );
+            const data = res.data;
+            if (data.isSuccess) {
+              alert(data.message);
+              setLoader(false);
+            } else if (data.detail) {
+              setLoader(false);
+              alert(data.detail);
+            } else {
+              alert(data.message);
+              setLoader(false);
+            }
+          } catch (error) {
+            if (error.response?.data?.hasException) {
+              alert(error.response.data.errorResDto.details);
+              setLoader(false);
+            } else if (
+              !error.response?.data?.isSuccess &&
+              !error.response?.data?.hasException
+            ) {
+              alert(error.response?.data?.message);
+              setLoader(false);
+            } else if (error.request) {
+              alert("No response from server");
+              setLoader(false);
+            } else {
+              alert("Error: " + error.message);
+              setLoader(false);
+            }
+          }
+        } else {
+          alert("No Instagram URL provided.");
+        }
+        break;
+
       default:
         alert("Invalid selection.");
         break;
@@ -144,22 +200,40 @@ export default function Dashboard() {
                     disabled={!curUser.verified_email}
                   >
                     <option value="file">Direct Video Upload</option>
+                    <option value="ig">Instagram Reel / Video</option>
                   </select>
                 </div>
 
-                <div className="mb-3">
-                  <label htmlFor="fileInput" className="form-label">
-                    Upload Video
-                  </label>
-                  <input
-                    id="fileInput"
-                    type="file"
-                    className="form-control"
-                    onChange={handleFileChange}
-                    disabled={!curUser.verified_email}
-                    accept="video/*"
-                  />
-                </div>
+                {inputType !== "file" ? (
+                  <div className="mb-3">
+                    <label htmlFor="urlInput" className="form-label">
+                      Video URL
+                    </label>
+                    <input
+                      id="urlInput"
+                      type="text"
+                      className="form-control"
+                      placeholder="Paste the URL copied from the share option only"
+                      value={textInput}
+                      onChange={handleInputChange}
+                      disabled={!curUser.verified_email}
+                    />
+                  </div>
+                ) : (
+                  <div className="mb-3">
+                    <label htmlFor="fileInput" className="form-label">
+                      Upload Video
+                    </label>
+                    <input
+                      id="fileInput"
+                      type="file"
+                      className="form-control"
+                      onChange={handleFileChange}
+                      disabled={!curUser.verified_email}
+                      accept="video/*"
+                    />
+                  </div>
+                )}
 
                 <div className="d-grid">
                   <button

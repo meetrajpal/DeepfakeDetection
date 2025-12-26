@@ -8,6 +8,30 @@
     "url": "/api/v1/users"
   },
   {
+    "operationType": "postForgotPassword",
+    "url": "/api/v1/auth/forgot-password"
+  },
+  {
+    "operationType": "postCnfForgotPassword",
+    "url": "/api/v1/mail/forgot-password/"
+  },
+  {
+    "operationType": "postUpdateEmail",
+    "url": "/api/v1/auth/update-email"
+  },
+  {
+    "operationType": "postCnfUpdateEmail",
+    "url": "/api/v1/mail/update-email/"
+  },
+  {
+    "operationType": "postLogout",
+    "url": "/api/v1/auth/logout"
+  },
+  {
+    "operationType": "postLogin",
+    "url": "/api/v1/auth/login"
+  },
+  {
     "operationType": "createUser",
     "url": "/api/v1/auth/signup"
   }

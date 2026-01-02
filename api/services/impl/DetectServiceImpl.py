@@ -316,7 +316,7 @@ class DetectServiceImpl(DetectService):
             "x-rapidapi-key": os.getenv("RKEY")
         }
 
-        async with httpx.AsyncClient(timeout=60.0) as client:
+        async with httpx.AsyncClient(timeout=120.0) as client:
             response = await client.get(callurl, headers=headers)
             if response:
                 data = response.json()
@@ -415,7 +415,7 @@ class DetectServiceImpl(DetectService):
             "x-rapidapi-key": os.getenv("RKEY")
         }
 
-        async with httpx.AsyncClient(timeout=60.0) as client:
+        async with httpx.AsyncClient(timeout=120.0) as client:
             response = await client.post(callurl, json={"url": url}, headers=headers)
             if response:
                 data = response.json()
@@ -527,7 +527,7 @@ class DetectServiceImpl(DetectService):
             "x-rapidapi-key": os.getenv("RKEY")
         }
 
-        async with httpx.AsyncClient(timeout=60.0) as client:
+        async with httpx.AsyncClient(timeout=120.0) as client:
             response = await client.post(callurl, json={"url": url}, headers=headers)
             if response:
                 data = response.json()

@@ -99,7 +99,7 @@ async def insta_reel(
         )
         return JSONResponse(content=error_res.dict(), status_code=400)
 
-    if ("https://www.instagram.com/reels" not in url) & ("https://www.instagram.com/p" not in url):
+    if ("https://www.instagram.com/reel" not in url) & ("https://www.instagram.com/p" not in url):
         error_res = GeneralMsgResDto(
             isSuccess=False,
             hasException=True,
@@ -211,7 +211,7 @@ async def youtube_video(
         )
         return JSONResponse(content=error_res.dict(), status_code=400)
 
-    if "https://youtu.be" not in url:
+    if ("https://youtu.be" not in url) & ("https://youtube.com" not in url):
         error_res = GeneralMsgResDto(
             isSuccess=False,
             hasException=True,

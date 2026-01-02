@@ -110,13 +110,27 @@ def preprocess_video(video_path):
     clip = torch.stack(processed_frames).permute(1, 0, 2, 3).unsqueeze(0).to(DEVICE)
     return clip
 
-def get_youtube_video_id(url):
+def get_youtube_video_id(url: str):
     parsed_url = urlparse(url)
-    if "youtube.com" in parsed_url.netloc:
-        return parse_qs(parsed_url.query).get("v", [None])[0]
-    elif "youtu.be" in parsed_url.netloc:
-        return parsed_url.path.lstrip('/')
+    host = parsed_url.netloc.lower()
+    path = parsed_url.path
+
+    if "youtube.com" in host:
+        query = parse_qs(parsed_url.query)
+        if "v" in query:
+            return query["v"][0]
+
+        if path.startswith("/shorts/"):
+            return path.split("/shorts/")[1].split("/")[0]
+
+        if path.startswith("/embed/"):
+            return path.split("/embed/")[1].split("/")[0]
+
+    if "youtu.be" in host:
+        return path.lstrip("/").split("/")[0]
+
     return None
+
 
 
 def get_facebook_share_id(url):
@@ -190,7 +204,7 @@ class DetectServiceImpl(DetectService):
             "x-rapidapi-host": os.getenv("IG_H"),
             "x-rapidapi-key": os.getenv("RKEY")
         }
-        async with httpx.AsyncClient(timeout=60.0) as client:
+        async with httpx.AsyncClient(timeout=120.0) as client:
             response = await client.get(callurl, headers=headers)
             if response:
                 data = response.json()
@@ -420,7 +434,7 @@ class DetectServiceImpl(DetectService):
 
         if data["medias"][0]["url"]:
             download_url = data["medias"][0]["url"]
-            extension = data["medias"][0]["ext"]
+            # extension = data["medias"][0]["ext"]
             videoid = get_youtube_video_id(url)
             if videoid is None:
                 error_res = GeneralMsgResDto(
@@ -434,7 +448,7 @@ class DetectServiceImpl(DetectService):
                     message="Request could not be completed due to an error."
                 )
                 return JSONResponse(content=error_res.dict(), status_code=500)
-            filename = f"{username}_{videoid}.{extension}"
+            filename = f"{username}_{videoid}.mp4"
         else:
             error_res = GeneralMsgResDto(
                 isSuccess=False,

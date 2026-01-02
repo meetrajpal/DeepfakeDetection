@@ -12,13 +12,15 @@
 --------------------------------------------------------------*/
 /* Fonts */
 :root {
-  --default-font: "Roboto",  system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --heading-font: "Source Sans Pro",  sans-serif;
-  --nav-font: "Poppins",  sans-serif;
+  --default-font: "Roboto", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --heading-font: "Source Sans Pro", sans-serif;
+  --nav-font: "Poppins", sans-serif;
 }
 
 /* Global Colors - The following color variables are used throughout the website. Updating them here will change the color scheme of the entire website */
-:root { 
+:root {
   --background-color: #ffffff; /* Background color for the entire website, including individual sections */
   --default-color: #1a1f24; /* Default color used for the majority of the text content across the entire website */
   --heading-color: #485664; /* Color for headings, subheadings and title throughout the website */
@@ -29,7 +31,7 @@
 
 /* Nav Menu Colors - The following color variables are used specifically for the navigation menu. They are separate from the global colors to allow for more customization options */
 :root {
-  --nav-color: #485664;  /* The default color of the main navmenu links */
+  --nav-color: #485664; /* The default color of the main navmenu links */
   --nav-hover-color: #0ea2bd; /* Applied to main navmenu links when they are hovered over or active */
   --nav-mobile-background-color: #ffffff; /* Used as the background color for mobile navigation menu */
   --nav-dropdown-background-color: #ffffff; /* Used as the background color for dropdown items that appear when hovering over primary navigation items */
@@ -92,7 +94,10 @@ h6 {
 .pulsating-play-btn {
   width: 94px;
   height: 94px;
-  background: radial-gradient(var(--accent-color) 50%, color-mix(in srgb, var(--accent-color), transparent 75%) 52%);
+  background: radial-gradient(
+    var(--accent-color) 50%,
+    color-mix(in srgb, var(--accent-color), transparent 75%) 52%
+  );
   border-radius: 50%;
   display: block;
   position: relative;
@@ -310,12 +315,12 @@ h6 {
     position: relative;
   }
 
-  .navmenu>ul>li {
+  .navmenu > ul > li {
     white-space: nowrap;
     padding: 15px 14px;
   }
 
-  .navmenu>ul>li:last-child {
+  .navmenu > ul > li:last-child {
     padding-right: 0;
   }
 
@@ -342,7 +347,7 @@ h6 {
     transition: 0.3s;
   }
 
-  .navmenu>ul>li>a:before {
+  .navmenu > ul > li > a:before {
     content: "";
     position: absolute;
     width: 100%;
@@ -356,13 +361,13 @@ h6 {
   }
 
   .navmenu a:hover:before,
-  .navmenu li:hover>a:before,
+  .navmenu li:hover > a:before,
   .navmenu .active:before {
     visibility: visible;
     width: 100%;
   }
 
-  .navmenu li:hover>a,
+  .navmenu li:hover > a,
   .navmenu .active,
   .navmenu .active:focus {
     color: var(--nav-hover-color);
@@ -401,11 +406,11 @@ h6 {
 
   .navmenu .dropdown ul a:hover,
   .navmenu .dropdown ul .active:hover,
-  .navmenu .dropdown ul li:hover>a {
+  .navmenu .dropdown ul li:hover > a {
     color: var(--nav-dropdown-hover-color);
   }
 
-  .navmenu .dropdown:hover>ul {
+  .navmenu .dropdown:hover > ul {
     opacity: 1;
     top: 100%;
     visibility: visible;
@@ -417,7 +422,7 @@ h6 {
     visibility: hidden;
   }
 
-  .navmenu .dropdown .dropdown:hover>ul {
+  .navmenu .dropdown .dropdown:hover > ul {
     opacity: 1;
     top: 0;
     left: -100%;
@@ -519,7 +524,7 @@ h6 {
     background-color: rgba(33, 37, 41, 0.1);
   }
 
-  .navmenu .dropdown>.dropdown-active {
+  .navmenu .dropdown > .dropdown-active {
     display: block;
     background-color: rgba(33, 37, 41, 0.03);
   }
@@ -546,7 +551,7 @@ h6 {
     transition: 0.3s;
   }
 
-  .mobile-nav-active .navmenu>ul {
+  .mobile-nav-active .navmenu > ul {
     display: block;
   }
 }
@@ -793,11 +798,11 @@ h6 {
   font-size: 14px;
 }
 
-.page-title .breadcrumbs ol li+li {
+.page-title .breadcrumbs ol li + li {
   padding-left: 10px;
 }
 
-.page-title .breadcrumbs ol li+li::before {
+.page-title .breadcrumbs ol li + li::before {
   content: "/";
   display: inline-block;
   padding-right: 10px;
@@ -817,7 +822,6 @@ section,
 }
 
 @media (max-width: 1199px) {
-
   section,
   .section {
     scroll-margin-top: 66px;
@@ -1058,10 +1062,11 @@ section,
 }
 
 .about .nav-pills {
-  border-bottom: 1px solid color-mix(in srgb, var(--default-color), transparent 85%);
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--default-color), transparent 85%);
 }
 
-.about .nav-pills li+li {
+.about .nav-pills li + li {
   margin-left: 40px;
 }
 
@@ -1237,12 +1242,20 @@ section,
 
 .onfocus .video-play {
   min-height: 400px;
-  background: linear-gradient(color-mix(in srgb, var(--background-color), transparent 90%), color-mix(in srgb, var(--background-color), transparent 75%)), url("../img/onfocus-video-bg.jpg") center center;
+  background: linear-gradient(
+      color-mix(in srgb, var(--background-color), transparent 90%),
+      color-mix(in srgb, var(--background-color), transparent 75%)
+    ),
+    url("../img/onfocus-video-bg.jpg") center center;
   background-size: cover;
 }
 
 .onfocus .content {
-  background: linear-gradient(color-mix(in srgb, var(--background-color), transparent 90%), color-mix(in srgb, var(--background-color), transparent 75%)), url("../img/onfocus-content-bg.jpg") center center;
+  background: linear-gradient(
+      color-mix(in srgb, var(--background-color), transparent 90%),
+      color-mix(in srgb, var(--background-color), transparent 75%)
+    ),
+    url("../img/onfocus-content-bg.jpg") center center;
   background-size: cover;
   padding: 40px;
 }
@@ -1611,7 +1624,8 @@ section,
 }
 
 .pricing .pricing-header {
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3)), url("../img/pricing-bg.jpg") center center;
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3)),
+    url("../img/pricing-bg.jpg") center center;
   background-size: cover;
   text-align: center;
   padding: 40px;
@@ -1699,7 +1713,11 @@ section,
 }
 
 .pricing .featured .pricing-header {
-  background: linear-gradient(color-mix(in srgb, var(--accent-color), transparent 10%), color-mix(in srgb, var(--accent-color), transparent 20%)), url("../img/pricing-bg.jpg") center center;
+  background: linear-gradient(
+      color-mix(in srgb, var(--accent-color), transparent 10%),
+      color-mix(in srgb, var(--accent-color), transparent 20%)
+    ),
+    url("../img/pricing-bg.jpg") center center;
 }
 
 .pricing .featured .buy-btn {
@@ -2081,10 +2099,11 @@ section,
   font-size: 15px;
 }
 
-.contact .info-item+.info-item {
+.contact .info-item + .info-item {
   padding-top: 20px;
   margin-top: 20px;
-  border-top: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+  border-top: 1px solid
+    color-mix(in srgb, var(--default-color), transparent 90%);
 }
 
 .contact .info-item i {
@@ -2116,24 +2135,28 @@ section,
   padding-bottom: 8px;
 }
 
-.contact .php-email-form input[type=text],
-.contact .php-email-form input[type=email],
+.contact .php-email-form input[type="text"],
+.contact .php-email-form input[type="email"],
 .contact .php-email-form textarea {
   border-radius: 0px;
   box-shadow: none;
   font-size: 14px;
-  background-color: color-mix(in srgb, var(--background-color), transparent 50%);
+  background-color: color-mix(
+    in srgb,
+    var(--background-color),
+    transparent 50%
+  );
   border-color: color-mix(in srgb, var(--default-color), transparent 80%);
 }
 
-.contact .php-email-form input[type=text]:focus,
-.contact .php-email-form input[type=email]:focus,
+.contact .php-email-form input[type="text"]:focus,
+.contact .php-email-form input[type="email"]:focus,
 .contact .php-email-form textarea:focus {
   border-color: var(--accent-color);
 }
 
-.contact .php-email-form input[type=text],
-.contact .php-email-form input[type=email] {
+.contact .php-email-form input[type="text"],
+.contact .php-email-form input[type="email"] {
   height: 48px;
   padding: 10px 15px;
 }
@@ -2143,7 +2166,7 @@ section,
   height: 290px;
 }
 
-.contact .php-email-form button[type=submit] {
+.contact .php-email-form button[type="submit"] {
   background: var(--accent-color);
   color: var(--contrast-color);
   border: 0;
@@ -2152,7 +2175,7 @@ section,
   border-radius: 4px;
 }
 
-.contact .php-email-form button[type=submit]:hover {
+.contact .php-email-form button[type="submit"]:hover {
   background: color-mix(in srgb, var(--accent-color) 90%, black 15%);
 }
 
@@ -2193,7 +2216,6 @@ section,
 }
 
 @media (max-width: 575px) {
-
   .portfolio-details .swiper-button-prev,
   .portfolio-details .swiper-button-next {
     display: none;
@@ -2345,7 +2367,8 @@ section,
   display: block;
   line-height: 1;
   padding: 8px 0 8px 15px;
-  border-left: 3px solid color-mix(in srgb, var(--default-color), transparent 70%);
+  border-left: 3px solid
+    color-mix(in srgb, var(--default-color), transparent 70%);
   margin: 20px 0;
   color: color-mix(in srgb, var(--default-color), transparent 20%);
   transition: 0.3s;
@@ -2573,7 +2596,7 @@ section,
   margin: 0;
 }
 
-.blog-details .meta-top ul li+li {
+.blog-details .meta-top ul li + li {
   padding-left: 20px;
 }
 
@@ -2593,7 +2616,8 @@ section,
 
 .blog-details .meta-bottom {
   padding-top: 10px;
-  border-top: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+  border-top: 1px solid
+    color-mix(in srgb, var(--default-color), transparent 90%);
 }
 
 .blog-details .meta-bottom i {
@@ -2632,7 +2656,7 @@ section,
   display: inline-block;
 }
 
-.blog-details .meta-bottom .tags li+li::before {
+.blog-details .meta-bottom .tags li + li::before {
   padding-right: 6px;
   color: var(--default-color);
   content: ",";
@@ -2831,7 +2855,6 @@ section,
 # Starter Section Section
 --------------------------------------------------------------*/
 
-
 /*--------------------------------------------------------------
 # Widgets
 --------------------------------------------------------------*/
@@ -2866,7 +2889,7 @@ section,
   transition: 0.3s;
 }
 
-.search-widget form input[type=text] {
+.search-widget form input[type="text"] {
   border: 0;
   padding: 4px;
   border-radius: 4px;
@@ -2875,7 +2898,7 @@ section,
   color: var(--default-color);
 }
 
-.search-widget form input[type=text]:focus {
+.search-widget form input[type="text"]:focus {
   outline: none;
 }
 

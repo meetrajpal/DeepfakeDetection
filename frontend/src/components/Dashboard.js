@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchCurUser, fetchHistory } from "../actions/actionindex";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { fetchCurUser, fetchHistory } from "../actions/actionindex";
 import urls from "../config/url.json";
 
 export default function Dashboard() {
@@ -375,11 +375,7 @@ export default function Dashboard() {
           id="preloader"
           className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75"
           style={{ zIndex: 1050 }}
-        >
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
+        ></div>
       )}
 
       {!curUser.verified_email && (
@@ -393,6 +389,28 @@ export default function Dashboard() {
           <div className="col-12 col-md-10 col-lg-8">
             <div className="card shadow-sm mb-4">
               <div className="card-header ">
+                <h5 className="mb-0 text-danger">Note</h5>
+              </div>
+              <div className="card-body">
+                <ol className="text-danger">
+                  <li>
+                    Please paste only those URL which appear when you click on
+                    share button of any social apps.
+                  </li>
+                  <li>
+                    All video files are deleted from our servers right after
+                    processing is completed. We never store your data.
+                  </li>
+                  <li>
+                    To download the video from your given URL we use third party
+                    APIs. So there is monthly limit for those third party APIs.
+                  </li>
+                </ol>
+              </div>
+            </div>
+
+            <div className="card shadow-sm mb-4">
+              <div className="card-header ">
                 <h5 className="mb-0 ">Deepfake Detection</h5>
               </div>
               <div className="card-body">
@@ -404,13 +422,16 @@ export default function Dashboard() {
                     id="inputType"
                     className="form-select"
                     value={inputType}
-                    onChange={(e) => setInputType(e.target.value)}
+                    onChange={(e) => {
+                      setInputType(e.target.value);
+                      setTextInput("");
+                    }}
                     disabled={!curUser.verified_email}
                   >
                     <option value="file">Direct Video Upload</option>
                     <option value="ig">Instagram Reel / Video</option>
                     <option value="fb">Facebook Video</option>
-                    <option value="xv">Twitter Video / Status</option>
+                    <option value="xv">X (Twitter) Video / Status</option>
                     <option value="yt">YouTube Video</option>
                   </select>
                 </div>

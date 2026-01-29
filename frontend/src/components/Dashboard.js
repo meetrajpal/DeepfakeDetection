@@ -18,14 +18,17 @@ export default function Dashboard() {
   const formData = new FormData();
 
   useEffect(() => {
-    if (!localStorage.getItem("token")) {
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("user_id");
+
+    if (!token) {
       navigate("/login");
-    } else {
-      const userId = localStorage.getItem("user_id");
-      dispatch(fetchCurUser(userId));
-      dispatch(fetchHistory(userId));
+      return;
     }
-  }, []);
+
+    dispatch(fetchCurUser(userId));
+    dispatch(fetchHistory(userId));
+  }, [dispatch, navigate]);
 
   useEffect(() => {
     if (!localStorage.getItem("token")) {

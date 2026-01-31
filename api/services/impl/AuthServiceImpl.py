@@ -91,7 +91,7 @@ class AuthServiceImpl(AuthService):
         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail()
         send_smtp_email.subject = "Reset Password"
         send_smtp_email.html_content = generate_forgot_password_email_template(jwt.encode(data, os.getenv("JWT_SECRET"), os.getenv("ALGO")))
-        send_smtp_email.sender = {"name": "no-reply", "email": "dfd.onrender@gmail.com"}
+        send_smtp_email.sender = {"name": "no-reply@deepfake-guard", "email": "dfd.onrender@gmail.com"}
         send_smtp_email.to = [{"email": email}]
 
         try:
@@ -138,7 +138,7 @@ class AuthServiceImpl(AuthService):
         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail()
         send_smtp_email.subject = "Update Email"
         send_smtp_email.html_content = generate_update_email_template(jwt.encode(data, os.getenv("JWT_SECRET"), os.getenv("ALGO")))
-        send_smtp_email.sender = {"name": "no-reply", "email": "dfd.onrender@gmail.com"}
+        send_smtp_email.sender = {"name": "no-reply@deepfake-guard", "email": "dfd.onrender@gmail.com"}
         send_smtp_email.to = [{"email": email}]
 
         try:

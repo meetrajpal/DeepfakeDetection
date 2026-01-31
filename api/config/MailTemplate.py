@@ -33,7 +33,7 @@ def generate_update_email_template(token: str) -> str:
                 <table align="center" style="width: 600px; background-color: #000000;">
                     <tr>
                         <td style="padding: 30px; color: #ffffff;">
-                            <p><a href="" style="color: #ffffff;">dfd.onrender.com</a></p>
+                            <p><a href="" style="color: #ffffff;">deepfake-guard.meetrajpal.tech</a></p>
                         </td>
                     </tr>
                 </table>
@@ -74,7 +74,7 @@ def generate_forgot_password_email_template(token: str) -> str:
                 <table align="center" style="width: 600px; background-color: #000000;">
                     <tr>
                         <td style="padding: 30px; color: #ffffff;">
-                            <p><a href="" style="color: #ffffff;">dfd.onrender.com</a></p>
+                            <p><a href="" style="color: #ffffff;">deepfake-guard.meetrajpal.tech</a></p>
                         </td>
                     </tr>
                 </table>
@@ -116,7 +116,7 @@ def generate_verify_email_template(token: str) -> str:
             <table align="center" style="width: 600px; background-color: #000000;">
                 <tr>
                     <td style="padding: 30px; color: #ffffff;">
-                        <p><a href="" style="color: #ffffff;">dfd.onrender.com</a></p>
+                        <p><a href="" style="color: #ffffff;">deepfake-guard.meetrajpal.tech</a></p>
                     </td>
                 </tr>
             </table>

@@ -145,7 +145,7 @@ class UserServiceImpl(UserService):
         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail()
         send_smtp_email.subject = "Account Email Verification"
         send_smtp_email.html_content = generate_verify_email_template(jwt.encode(data, os.getenv("JWT_SECRET"), os.getenv("ALGO")))
-        send_smtp_email.sender = {"name": "no-reply", "email": "dfd.onrender@gmail.com"}
+        send_smtp_email.sender = {"name": "no-reply@deepfake-guard", "email": "dfd.onrender@gmail.com"}
         send_smtp_email.to = [{"email": user.email}]
 
         try:
@@ -314,7 +314,7 @@ class UserServiceImpl(UserService):
                 send_smtp_email.subject = "Account Email Verification"
                 send_smtp_email.html_content = generate_verify_email_template(
                     jwt.encode(data, os.getenv("JWT_SECRET"), os.getenv("ALGO")))
-                send_smtp_email.sender = {"name": "no-reply", "email": "dfd.onrender@gmail.com"}
+                send_smtp_email.sender = {"name": "no-reply@deepfake-guard", "email": "dfd.onrender@gmail.com"}
                 send_smtp_email.to = [{"email": email}]
 
                 try:
